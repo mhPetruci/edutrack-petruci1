@@ -1,0 +1,96 @@
+{
+  "name": "subjects",
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "primary_key": true,
+      "auto_increment": false,
+      "default": "gen_random_uuid()"
+    },
+    {
+      "name": "owner_id",
+      "type": "uuid",
+      "not_null": true,
+      "foreign_key": {
+        "table": "users",
+        "field": "id",
+        "on_delete": "cascade"
+      }
+    },
+    {
+      "name": "name",
+      "type": "varchar",
+      "length": 255,
+      "not_null": true,
+      "check": "length(trim(name)) > 0"
+    },
+    {
+      "name": "code",
+      "type": "varchar",
+      "length": 50,
+      "not_null": false
+    },
+    {
+      "name": "description",
+      "type": "text",
+      "not_null": false
+    },
+    {
+      "name": "status",
+      "type": "varchar",
+      "length": 20,
+      "not_null": true,
+      "default": "'active'",
+      "check": "status IN ('active', 'completed', 'dropped')"
+    },
+    {
+      "name": "credits",
+      "type": "integer",
+      "not_null": false,
+      "check": "credits >= 0"
+    },
+    {
+      "name": "semester",
+      "type": "varchar",
+      "length": 50,
+      "not_null": false
+    },
+    {
+      "name": "created_at",
+      "type": "timestamp",
+      "not_null": true,
+      "default": "NOW()"
+    },
+    {
+      "name": "updated_at",
+      "type": "timestamp",
+      "not_null": true,
+      "default": "NOW()"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "idx_subjects_owner_id",
+      "fields": ["owner_id"]
+    },
+    {
+      "name": "idx_subjects_name",
+      "fields": ["name"]
+    }
+  ],
+  "constraints": [
+    {
+      "name": "unique_owner_name",
+      "type": "unique",
+      "fields": ["owner_id", "name"]
+    }
+  ],
+  "triggers": [
+    {
+      "name": "update_subjects_updated_at",
+      "event": "BEFORE UPDATE",
+      "function": "update_updated_at_column"
+    }
+  ]
+}

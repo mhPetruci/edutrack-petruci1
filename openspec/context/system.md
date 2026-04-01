@@ -6,13 +6,13 @@ Este projeto é um backend de gestão acadêmica construído usando XanoScript e
 ## Objetivo
 Permitir que os usuários gerenciem disciplinas acadêmicas e dados relacionados.
 
-Entidades Principais
+## Entidades Principais
 Usuários (autenticação nativa do Xano)
 
 Disciplinas (disciplinas acadêmicas pertencentes aos usuários)
 
-Relacionamentos
+## Relacionamentos
 Cada disciplina pertence a um usuário.
 
-Evolução Esperada
+## Evolução Esperada
 O sistema incluirá futuramente APIs, tarefas de automação e
