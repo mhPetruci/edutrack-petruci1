@@ -20,3 +20,4 @@ elif menu_option == "Disciplinas":
 elif menu_option == "Tarefas":
     st.subheader("Gerenciamento de Tarefas")
     st.checkbox("Exemplo: Estudar Streamlit")
+    ##apagardps
