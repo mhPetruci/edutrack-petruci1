@@ -7,6 +7,13 @@ function get_subjects_for_user(user_id) {
   );
 }
 
+function get_academic_tasks_for_user(user_id) {
+  return db.query(
+    "SELECT subject_id, due_date, completed_at, status FROM academic_tasks WHERE owner_id = ?",
+    [user_id]
+  );
+}
+
 function get_subject_by_id(subject_id) {
   return db.query("SELECT * FROM subjects WHERE id = ?", [subject_id])[0] || null;
 }
@@ -93,9 +100,38 @@ function delete_subject_for_user(subject_id, user_id) {
   return true;
 }
 
+function search_subjects_for_user(user_id, options = {}) {
+  const name = options.name ? options.name.trim().toLowerCase() : null;
+  const overdueSubjectIds = Array.isArray(options.overdueSubjectIds) ? options.overdueSubjectIds : [];
+
+  if (!name && overdueSubjectIds.length === 0) {
+    return get_subjects_for_user(user_id);
+  }
+
+  const filters = [];
+  const params = [user_id];
+
+  if (name) {
+    filters.push("LOWER(name) LIKE ?");
+    params.push(`%${name}%`);
+  }
+
+  if (overdueSubjectIds.length > 0) {
+    const placeholders = overdueSubjectIds.map(() => "?").join(", ");
+    filters.push(`id IN (${placeholders})`);
+    params.push(...overdueSubjectIds);
+  }
+
+  const clause = filters.length === 1 ? filters[0] : `(${filters.join(" OR ")})`;
+  const query = `SELECT * FROM subjects WHERE owner_id = ? AND ${clause} ORDER BY name`;
+  return db.query(query, params);
+}
+
 module.exports = {
   get_subjects_for_user,
   create_subject_for_user,
   update_subject_for_user,
   delete_subject_for_user,
+  get_academic_tasks_for_user,
+  search_subjects_for_user,
 };
