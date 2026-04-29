@@ -1,0 +1,69 @@
+{
+  "name": "academic_tasks",
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "primary_key": true,
+      "auto_increment": false,
+      "default": "gen_random_uuid()"
+    },
+    {
+      "name": "subject_id",
+      "type": "uuid",
+      "not_null": true,
+      "foreign_key": {
+        "table": "subjects",
+        "field": "id",
+        "on_delete": "cascade"
+      }
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "not_null": true,
+      "check": "length(trim(title)) > 0"
+    },
+    {
+      "name": "description",
+      "type": "text",
+      "not_null": false
+    },
+    {
+      "name": "due_date",
+      "type": "date",
+      "not_null": false
+    },
+    {
+      "name": "status",
+      "type": "text",
+      "not_null": true,
+      "default": "pending"
+    },
+    {
+      "name": "created_at",
+      "type": "timestamp",
+      "not_null": true,
+      "default": "NOW()"
+    },
+    {
+      "name": "updated_at",
+      "type": "timestamp",
+      "not_null": true,
+      "default": "NOW()"
+    }
+  ],
+  "indexes": [
+    {
+      "name": "idx_academic_tasks_subject_id",
+      "fields": ["subject_id"]
+    }
+  ],
+  "triggers": [
+    {
+      "name": "update_academic_tasks_updated_at",
+      "event": "BEFORE UPDATE",
+      "function": "update_updated_at_column"
+    }
+  ]
+}
