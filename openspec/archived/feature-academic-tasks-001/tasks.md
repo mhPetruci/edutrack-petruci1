@@ -1,5 +1,6 @@
 # Tasks - feature-academic-tasks
 
+<<<<<<< HEAD
 ## Implementation Tasks
 
 ### Phase 1: Database Setup
@@ -126,3 +127,7 @@
 - ✅ Response times < 200ms for typical queries
 - ✅ 100% test coverage for core functions
 - ✅ No broken foreign key constraints
+=======
+- [ ] Criar tabela `academic_tasks` com campos: `title`, `description`, `due_date`, `status`, `subject_id`
+- [ ] Adicionar foreign key de `subject_id` para `subjects.id`
+>>>>>>> 3d755528621c54d0b7806704a438b276fa0f9707
