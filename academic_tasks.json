@@ -1,0 +1,94 @@
+{
+  "name": "academic_tasks",
+  "fields": [
+    {
+      "name": "id",
+      "type": "uuid",
+      "primary_key": true,
+      "auto_increment": false,
+      "default": "gen_random_uuid()"
+    },
+    {
+      "name": "owner_id",
+      "type": "uuid",
+      "not_null": true,
+      "foreign_key": {
+        "table": "users",
+        "field": "id",
+        "on_delete": "cascade"
+      }
+    },
+    {
+      "name": "subject_id",
+      "type": "uuid",
+      "not_null": true,
+      "foreign_key": {
+        "table": "subjects",
+        "field": "id",
+        "on_delete": "cascade"
+      }
+    },
+    {
+      "name": "title",
+      "type": "varchar",
+      "length": 255,
+      "not_null": true,
+      "check": "length(trim(title)) > 0"
+    },
+    {
+      "name": "description",
+      "type": "text",
+      "not_null": false
+    },
+    {
+      "name": "due_date",
+      "type": "timestamp",
+      "not_null": true
+    },
+    {
+      "name": "priority",
+      "type": "varchar",
+      "length": 20,
+      "not_null": true,
+      "default": "'medium'",
+      "check": "priority IN ('low', 'medium', 'high')"
+    },
+    {
+      "name": "status",
+      "type": "varchar",
+      "length": 20,
+      "not_null": true,
+      "default": "'pending'",
+      "check": "status IN ('pending', 'in_progress', 'completed', 'cancelled')"
+    },
+    {
+      "name": "completed_at",
+      "type": "timestamp",
+      "not_null": false
+    },
+    {
+      "name": "created_at",
+      "type": "timestamp",
+      "not_null": true,
+      "default": "NOW()"
+    },
+    {
+      "name": "updated_at",
+      "type": "timestamp",
+      "not_null": true,
+      "default": "NOW()"
+    }
+  ],
+  "indexes": [
+    { "name": "idx_tasks_owner_subject", "fields": ["owner_id", "subject_id"] },
+    { "name": "idx_tasks_status", "fields": ["status"] },
+    { "name": "idx_tasks_due_date", "fields": ["due_date"] }
+  ],
+  "triggers": [
+    {
+      "name": "update_academic_tasks_updated_at",
+      "event": "BEFORE UPDATE",
+      "function": "update_updated_at_column"
+    }
+  ]
+}
