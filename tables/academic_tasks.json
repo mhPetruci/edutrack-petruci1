@@ -9,7 +9,6 @@
       "default": "gen_random_uuid()"
     },
     {
-<<<<<<< HEAD
       "name": "owner_id",
       "type": "uuid",
       "not_null": true,
@@ -20,8 +19,6 @@
       }
     },
     {
-=======
->>>>>>> 3d755528621c54d0b7806704a438b276fa0f9707
       "name": "subject_id",
       "type": "uuid",
       "not_null": true,
@@ -33,12 +30,8 @@
     },
     {
       "name": "title",
-<<<<<<< HEAD
       "type": "varchar",
       "length": 255,
-=======
-      "type": "text",
->>>>>>> 3d755528621c54d0b7806704a438b276fa0f9707
       "not_null": true,
       "check": "length(trim(title)) > 0"
     },
@@ -49,7 +42,6 @@
     },
     {
       "name": "due_date",
-<<<<<<< HEAD
       "type": "timestamp",
       "not_null": true
     },
@@ -73,16 +65,6 @@
       "name": "completed_at",
       "type": "timestamp",
       "not_null": false
-=======
-      "type": "date",
-      "not_null": false
-    },
-    {
-      "name": "status",
-      "type": "text",
-      "not_null": true,
-      "default": "pending"
->>>>>>> 3d755528621c54d0b7806704a438b276fa0f9707
     },
     {
       "name": "created_at",
@@ -99,7 +81,6 @@
   ],
   "indexes": [
     {
-<<<<<<< HEAD
       "name": "idx_tasks_owner_id",
       "fields": ["owner_id"]
     },
@@ -114,10 +95,13 @@
     {
       "name": "idx_tasks_due_date",
       "fields": ["due_date"]
-=======
-      "name": "idx_academic_tasks_subject_id",
-      "fields": ["subject_id"]
->>>>>>> 3d755528621c54d0b7806704a438b276fa0f9707
+    }
+  ],
+  "constraints": [
+    {
+      "name": "unique_owner_subject_title",
+      "type": "unique",
+      "fields": ["owner_id", "subject_id", "title"]
     }
   ],
   "triggers": [
