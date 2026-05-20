@@ -34,6 +34,20 @@ st.markdown("""
         border-left: 4px solid #667eea;
         margin: 0.5rem 0;
     }
+    .resource-card,
+    .subject-card {
+        background: rgba(255, 255, 255, 0.92);
+        padding: 1.25rem;
+        border-radius: 18px;
+        box-shadow: 0 18px 40px rgba(20, 30, 80, 0.08);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        margin-bottom: 1rem;
+    }
+    .resource-card:hover,
+    .subject-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 24px 55px rgba(20, 30, 80, 0.12);
+    }
     .welcome-card {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
@@ -42,15 +56,34 @@ st.markdown("""
         text-align: center;
         margin: 2rem 0;
     }
+    .resource-label {
+        display: inline-block;
+        background: rgba(102, 126, 234, 0.12);
+        color: #3f51b5;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
     .stButton>button {
         border-radius: 8px;
         font-weight: 500;
+    }
+    [data-testid="stAppViewContainer"] {
+        background: radial-gradient(circle at top left, rgba(102,126,234,0.18), transparent 25%),
+                    radial-gradient(circle at bottom right, rgba(118,75,162,0.20), transparent 20%),
+                    #f4f7ff;
     }
     .stTabs [data-baseweb="tab-list"] {
         gap: 2px;
     }
     .stTabs [data-baseweb="tab"] {
         border-radius: 8px 8px 0 0;
+    }
+    .stExpander {
+        background: rgba(255,255,255,0.9);
+        border-radius: 16px;
+        padding: 0.75rem;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -213,6 +246,7 @@ def main_app():
     menu = st.sidebar.radio("Menu", [
         "📊 Dashboard",
         "📚 Disciplinas", 
+        "📚 Recursos",
         "📝 Tarefas",
         "📈 Relatórios",
         "👤 Perfil",
@@ -223,6 +257,8 @@ def main_app():
         dashboard_page()
     elif menu == "📚 Disciplinas":
         subjects_page()
+    elif menu == "📚 Recursos":
+        resources_page()
     elif menu == "📝 Tarefas":
         tasks_page()
     elif menu == "📈 Relatórios":
@@ -373,6 +409,93 @@ def dashboard_page():
     else:
         st.info("📝 Nenhuma tarefa pendente. Que tal criar uma nova?")
 
+def resources_page():
+    """Página de recursos e referências"""
+    st.title("📚 Recursos de Estudo")
+    st.markdown("""
+    <div style="background: rgba(255, 255, 255, 0.95); padding: 1.5rem; border-radius: 18px; box-shadow: 0 18px 40px rgba(20, 30, 80, 0.08); margin-bottom: 1.5rem;">
+        <h2>Encontre materiais de estudo, ferramentas e guias práticos</h2>
+        <p style="color: #555; font-size: 1rem; line-height: 1.6;">Use este espaço para acessar recursos rápidos que ajudam a organizar seus estudos, desenvolver hábitos mais eficientes e manter o foco.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    resources = [
+        {
+            "title": "Guia de Estudo Inteligente",
+            "description": "Técnicas comprovadas para planejar revisão, manter foco e reduzir procrastinação.",
+            "category": "Organização",
+            "link": "https://www.mysite.com/estudo-inteligente",
+            "tags": ["planejamento", "concentração", "rotina"]
+        },
+        {
+            "title": "Modelo de Cronograma Acadêmico",
+            "description": "Download de uma planilha pronta para controlar prazos, provas e atividades semanais.",
+            "category": "Produtividade",
+            "link": "https://www.mysite.com/cronograma-academico",
+            "tags": ["agenda", "prazos", "controle"]
+        },
+        {
+            "title": "Técnica Pomodoro para Estudos",
+            "description": "Uma abordagem simples para estudar em blocos focados e aproveitar pausas estratégicas.",
+            "category": "Métodos de Estudo",
+            "link": "https://www.mysite.com/pomodoro-estudos",
+            "tags": ["foco", "tempo", "produtividade"]
+        },
+        {
+            "title": "Lista de Verificação para Trabalhos",
+            "description": "Checklist rápida para garantir que seu trabalho acadêmico esteja pronto antes da entrega.",
+            "category": "Organização",
+            "link": "https://www.mysite.com/checklist-trabalhos",
+            "tags": ["revisão", "qualidade", "formatação"]
+        },
+        {
+            "title": "Estratégias de Leitura Eficiente",
+            "description": "Como absorver conteúdo mais rápido sem perder a compreensão.",
+            "category": "Métodos de Estudo",
+            "link": "https://www.mysite.com/leitura-eficiente",
+            "tags": ["leitura", "compreensão", "resumo"]
+        }
+    ]
+
+    categories = ["Todas"] + sorted({resource["category"] for resource in resources})
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        search_query = st.text_input("Buscar recursos", placeholder="Procure por tema, método ou ferramenta")
+    with col2:
+        selected_category = st.selectbox("Categoria", categories)
+
+    filtered_resources = []
+    for resource in resources:
+        matches_category = selected_category == "Todas" or resource["category"] == selected_category
+        matches_query = True
+        if search_query:
+            query = search_query.lower()
+            matches_query = query in resource["title"].lower() or query in resource["description"].lower() or any(query in tag.lower() for tag in resource["tags"])
+        if matches_category and matches_query:
+            filtered_resources.append(resource)
+
+    if filtered_resources:
+        for resource in filtered_resources:
+            st.markdown(f"""
+            <div class="resource-card">
+                <h3>{resource['title']}</h3>
+                <p style="color: #444; line-height: 1.5;">{resource['description']}</p>
+                <span class="resource-label">{resource['category']}</span>
+                <p style="margin: 0.75rem 0 0;">
+                    {' '.join(f'<span style="color: #555; font-size: 0.9rem; margin-right: 0.5rem;">#{tag}</span>' for tag in resource['tags'])}
+                </p>
+                <p style="margin-top: 1rem;"><a href="{resource['link']}" target="_blank">Abrir recurso ↗</a></p>
+            </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.info("Nenhum recurso encontrado. Ajuste o filtro ou pesquise outro tema.")
+
+    st.markdown("---")
+    st.subheader("Dicas rápidas")
+    st.write("- Use tags e categorias para encontrar conteúdo relevante rapidamente.")
+    st.write("- Revise recursos antes de aplicar cada método à sua rotina de estudos.")
+    st.write("- Combine ferramentas de planejamento com revisão ativa para melhores resultados.")
+
 def subjects_page():
     """Página de disciplinas"""
     st.title("📚 Minhas Disciplinas")
@@ -409,17 +532,63 @@ def subjects_page():
     
     with tab1:
         st.subheader("Disciplinas Ativas")
-        subjects = make_request("GET", "subjects")
-        
-        if subjects:
-            active_subjects = [s for s in subjects if s.get("status") == "active"]
-            
-            if active_subjects:
-                for subject in active_subjects:
-                    with st.container():
-                        col1, col2, col3 = st.columns([3, 1, 1])
-                        
-                        with col1:
+        subjects = make_request("GET", "subjects") or []
+        tasks = make_request("GET", "tasks") or []
+
+        active_subjects = [s for s in subjects if s.get("status") == "active"]
+        task_map = {}
+        for task in tasks:
+            subject_id = task.get("subject_id")
+            if subject_id not in task_map:
+                task_map[subject_id] = []
+            task_map[subject_id].append(task)
+
+        if active_subjects:
+            search_text = st.text_input("Buscar disciplinas", placeholder="Procure por nome, código ou professor")
+            semester_options = ["Todos"] + sorted({s.get("semester") for s in active_subjects if s.get("semester")})
+            semester_filter = st.selectbox("Filtrar por semestre", semester_options)
+
+            total_tasks = len(tasks)
+            total_subjects = len(active_subjects)
+            completed_tasks = len([t for t in tasks if t.get("status") == "completed"])
+            progress_values = []
+            for subject in active_subjects:
+                subject_tasks = task_map.get(subject.get("id"), [])
+                if subject_tasks:
+                    completed = len([t for t in subject_tasks if t.get("status") == "completed"])
+                    progress_values.append((completed / len(subject_tasks)) * 100)
+
+            average_progress = sum(progress_values) / len(progress_values) if progress_values else 0
+
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("📚 Disciplinas Ativas", total_subjects)
+            col2.metric("📝 Tarefas Totais", total_tasks)
+            col3.metric("✅ Tarefas Concluídas", completed_tasks)
+            col4.metric("📈 Progresso Médio", f"{average_progress:.0f}%")
+
+            filtered_subjects = active_subjects
+            if search_text:
+                search_lower = search_text.lower()
+                filtered_subjects = [
+                    s for s in filtered_subjects
+                    if search_lower in (s.get("name", "").lower() + s.get("code", "").lower() + s.get("professor", "").lower())
+                ]
+            if semester_filter != "Todos":
+                filtered_subjects = [s for s in filtered_subjects if s.get("semester") == semester_filter]
+
+            if filtered_subjects:
+                for subject in filtered_subjects:
+                    subject_tasks = task_map.get(subject.get("id"), [])
+                    completed = len([t for t in subject_tasks if t.get("status") == "completed"])
+                    total = len(subject_tasks)
+                    progress = (completed / total * 100) if total > 0 else 0
+
+                    with st.expander(f"📘 {subject.get('name')} — {progress:.0f}% ({completed}/{total} tarefas)", expanded=False):
+                        st.markdown("""
+                        <div class="subject-card">
+                        """, unsafe_allow_html=True)
+                        col_a, col_b = st.columns([3, 1])
+                        with col_a:
                             st.markdown(f"**{subject.get('name')}**")
                             details = []
                             if subject.get('code'):
@@ -430,63 +599,64 @@ def subjects_page():
                                 details.append(f"📅 {subject.get('semester')}")
                             if subject.get('credits'):
                                 details.append(f"⭐ {subject.get('credits')} créditos")
-                            
                             if details:
                                 st.caption(" • ".join(details))
                             if subject.get('description'):
-                                st.caption(subject.get('description'))
-                        
-                        with col2:
-                            # Calcular progresso da disciplina
-                            tasks_response = make_request("GET", "tasks")
-                            if tasks_response:
-                                subject_tasks = [t for t in tasks_response if t.get("subject_id") == subject["id"]]
-                                if subject_tasks:
-                                    completed = len([t for t in subject_tasks if t.get("status") == "completed"])
-                                    total = len(subject_tasks)
-                                    progress = (completed / total * 100) if total > 0 else 0
-                                    st.metric("Progresso", f"{progress:.0f}%", f"{completed}/{total}")
+                                st.write(subject.get('description'))
+                        with col_b:
+                            if total > 0:
+                                st.metric("Progresso", f"{progress:.0f}%", f"{completed}/{total}")
+                            else:
+                                st.caption("Sem tarefas cadastradas")
+
+                        if subject_tasks:
+                            st.markdown("**Tarefas relevantes**")
+                            for task in sorted(subject_tasks, key=lambda t: (t.get('status') != 'completed', t.get('due_date', ''))):
+                                status_icon = "✅" if task.get('status') == 'completed' else "⏳" if task.get('status') == 'in_progress' else "❌"
+                                due_date = task.get('due_date', '')
+                                due_date_label = datetime.fromisoformat(due_date).strftime("%d/%m/%Y") if due_date else "Sem prazo"
+                                st.markdown(f"- {status_icon} **{task.get('title')}** — {due_date_label}")
+                        else:
+                            st.info("Nenhuma tarefa adicionada ainda para esta disciplina.")
+
+                        st.markdown("""
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                        action_col1, action_col2, action_col3 = st.columns(3)
+                        with action_col1:
+                            if st.button("✏️ Editar", key=f"edit_{subject['id']}", help="Editar"):
+                                st.session_state.edit_subject_id = subject['id']
+                        with action_col2:
+                            if st.button("📦 Arquivar", key=f"archive_{subject['id']}", help="Arquivar"):
+                                if st.session_state.get(f"confirm_archive_{subject['id']}", False):
+                                    result = make_request("PATCH", f"subjects/{subject['id']}", {"status": "completed"})
+                                    if result:
+                                        st.success("Disciplina arquivada!")
+                                        st.session_state[f"confirm_archive_{subject['id']}"] = False
+                                        st.rerun()
+                                    else:
+                                        st.error("Erro ao arquivar disciplina.")
                                 else:
-                                    st.caption("Sem tarefas")
-                        
-                        with col3:
-                            col_edit, col_archive, col_delete = st.columns(3)
-                            
-                            with col_edit:
-                                if st.button("✏️", key=f"edit_{subject['id']}", help="Editar"):
-                                    st.session_state.edit_subject_id = subject['id']
-                            
-                            with col_archive:
-                                if st.button("📦", key=f"archive_{subject['id']}", help="Arquivar"):
-                                    if st.session_state.get(f"confirm_archive_{subject['id']}", False):
-                                        result = make_request("PATCH", f"subjects/{subject['id']}", {"status": "completed"})
-                                        if result:
-                                            st.success("Disciplina arquivada!")
-                                            st.session_state[f"confirm_archive_{subject['id']}"] = False
-                                            st.rerun()
-                                        else:
-                                            st.error("Erro ao arquivar disciplina.")
+                                    st.session_state[f"confirm_archive_{subject['id']}"] = True
+                                    st.warning("Clique novamente para confirmar o arquivamento.")
+                        with action_col3:
+                            if st.button("🗑️ Excluir", key=f"delete_{subject['id']}", help="Excluir"):
+                                if st.session_state.get(f"confirm_delete_{subject['id']}", False):
+                                    result = make_request("DELETE", f"subjects/{subject['id']}")
+                                    if result is not None:
+                                        st.success("Disciplina excluída!")
+                                        st.session_state[f"confirm_delete_{subject['id']}"] = False
+                                        st.rerun()
                                     else:
-                                        st.session_state[f"confirm_archive_{subject['id']}"] = True
-                                        st.warning("Clique novamente para confirmar o arquivamento.")
-                            
-                            with col_delete:
-                                if st.button("🗑️", key=f"delete_{subject['id']}", help="Excluir"):
-                                    if st.session_state.get(f"confirm_delete_{subject['id']}", False):
-                                        result = make_request("DELETE", f"subjects/{subject['id']}")
-                                        if result is not None:  # DELETE retorna None em sucesso
-                                            st.success("Disciplina excluída!")
-                                            st.session_state[f"confirm_delete_{subject['id']}"] = False
-                                            st.rerun()
-                                        else:
-                                            st.error("Erro ao excluir disciplina.")
-                                    else:
-                                        st.session_state[f"confirm_delete_{subject['id']}"] = True
-                                        st.error("⚠️ Clique novamente para confirmar a exclusão. Esta ação não pode ser desfeita!")
+                                        st.error("Erro ao excluir disciplina.")
+                                else:
+                                    st.session_state[f"confirm_delete_{subject['id']}"] = True
+                                    st.error("⚠️ Clique novamente para confirmar a exclusão. Esta ação não pode ser desfeita!")
             else:
-                st.info("📚 Nenhuma disciplina ativa. Crie uma nova para começar!")
+                st.info("📚 Nenhuma disciplina corresponde aos critérios de busca.")
         else:
-            st.info("📚 Nenhuma disciplina cadastrada. Crie uma nova para começar!")
+            st.info("📚 Nenhuma disciplina ativa. Crie uma nova para começar!")
     
     with tab3:
         st.subheader("Disciplinas Arquivadas/Concluídas")

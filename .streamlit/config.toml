@@ -1,0 +1,23 @@
+[theme]
+# Força o Streamlit a usar essa base antes de aplicar as nossas cores
+base = "light"
+
+# A cor principal para botões, sliders e detalhes de destaque
+primaryColor = "#6C63FF" 
+
+# A cor de fundo principal da sua página
+backgroundColor = "#F8F9FA" 
+
+# A cor de fundo de elementos secundários (como a barra lateral e caixas de texto)
+secondaryBackgroundColor = "#E9ECEF" 
+
+# A cor principal do texto
+textColor = "#1F2124" 
+
+# A fonte do aplicativo (pode ser "sans serif", "serif" ou "monospace")
+font = "sans serif"
+
+[server]
+headless = false
+port = 3000
+enableCORS = false
